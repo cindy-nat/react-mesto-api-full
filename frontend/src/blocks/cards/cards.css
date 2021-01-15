@@ -1,0 +1,16 @@
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(282px, 282px));
+  max-width: 882px;
+  width: 69%;
+  row-gap: 20px;
+  column-gap: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width:320px) {
+  .cards {
+  width: 88%;
+  }
+}

@@ -1,0 +1,14 @@
+.form {
+  width: 358px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+@media screen and (max-width: 570px) {
+  .form {
+    width: 80%;
+  }
+
+}

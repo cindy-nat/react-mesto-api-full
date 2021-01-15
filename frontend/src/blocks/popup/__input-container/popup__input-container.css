@@ -1,0 +1,8 @@
+.popup__input-container {
+  width: 83%;
+  margin: 0 auto;
+}
+
+.popup__input-container:first-of-type {
+  margin-top: 30px;
+}

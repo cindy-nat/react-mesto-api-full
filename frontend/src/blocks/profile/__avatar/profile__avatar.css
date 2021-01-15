@@ -1,0 +1,27 @@
+.profile__avatar {
+  width: 122px;
+  height: 122px;
+  border-radius: 50%;
+  position: relative;
+  /*background-image: url('../../../images/image.jpg');*/
+  background-size: cover;
+  background-position: center;
+}
+
+.profile__avatar:hover {
+  cursor: pointer;
+}
+.profile__avatar:hover::after {
+  background-color: rgba(0,0,0,.8);
+  content: '';
+  background-image: url('../../../images/button_edit_big.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  left: 0;
+  width: 122px;
+  height: 122px;
+}

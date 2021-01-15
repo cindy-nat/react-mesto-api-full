@@ -1,0 +1,23 @@
+.cards__like {
+  height: 18px;
+  width: 21px;
+  background-image: url('../../../images/button_like.svg');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: white;
+  margin: auto 15px auto 0;
+  border: none;
+}
+
+.cards__like:hover {
+  cursor: pointer;
+  opacity: 0.5;
+  border: none;
+  outline: none;
+}
+
+.cards__like:focus {
+  border: none;
+  outline: none;
+}

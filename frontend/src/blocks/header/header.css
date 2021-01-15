@@ -1,0 +1,14 @@
+.header {
+  max-width: 882px;
+  width: 69%;
+  border-bottom: 1px solid rgba(84, 84, 84, 0.7);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media screen and (max-width: 570px) {
+  .header{
+    width:100%;
+  }
+}
