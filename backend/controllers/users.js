@@ -1,5 +1,6 @@
 const user = require('../models/user');
 const { showError, OK_CODE } = require('../helper/helper');
+const bcrypt = require('bcryptjs');
 
 // показать всех пользователей
 const getUsers = (req, res) => user.find({})
@@ -16,7 +17,13 @@ const getUser = (req, res) => {
 };
 
 // создать нового пользователя
-const createUser = (req, res) => user.create(req.body)
+const createUser = (req, res) =>
+  bcrypt.hash(req.body.password, 10)
+    .then (hash =>   user.create({
+      ...req.body,
+      password: hash
+    }))
+
   .then((userData) => res.status(OK_CODE).send(userData))
   .catch((err) => showError(res, err));
 
