@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
+const { login, createUser } = require("./controllers/users");
+const auth = require('./middlewares/auth');
+const cors = require('cors');
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -13,18 +16,34 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const { PORT = 3000 } = process.env;
 const app = express();
 
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'cindy.students.nomoredomains.monster',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: [
+    'Content-Type',
+    'origin',
+    'x-access-token',
+  ],
+  credentials: true,
+};
+
 app.listen(PORT, () => {
   console.log(PORT);
 });
 
 app.use(bodyParser.json());
+app.use("*", cors(corsOptions));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5fd314bfd3011c141cbb20f8',
-  };
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+//авторизация
+app.use(auth);
 
 // получение данных users
 app.use('/', users);

@@ -19,7 +19,7 @@ const getUser = (req, res) => {
 
 const login = (req, res) => {
   const {email, password} = req.body;
-  user.findOne({ email })
+  user.findOne({ email }).select('+password')
     .then(user => {
       if(!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
@@ -30,7 +30,8 @@ const login = (req, res) => {
             return Promise.reject(new Error('Неправильные почта или пароль'));
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key',  { expiresIn: '7d' });
-          res.cookie('jwt',token, { httpOnly: true, maxAge: 3600000 });
+          //res.cookie('jwt',token, { httpOnly: true, maxAge: 3600000 });
+          res.send ({ token });
         })
     })
     .catch(err => {
@@ -45,7 +46,6 @@ const createUser = (req, res) =>
       ...req.body,
       password: hash
     }))
-
   .then((userData) => res.status(OK_CODE).send(userData))
   .catch((err) => showError(res, err));
 
@@ -71,4 +71,5 @@ module.exports = {
   createUser,
   updateUser,
   updateAvatar,
+  login
 };
