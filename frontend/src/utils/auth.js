@@ -1,4 +1,4 @@
-export const AUTH_URL = 'https://auth.nomoreparties.co';
+export const AUTH_URL = 'http://localhost:3000';
 
 
 const getResponseData = (res) => {
@@ -11,6 +11,7 @@ const getResponseData = (res) => {
 export const register = (email, password) => {
   return fetch(`${AUTH_URL}/signup` , {
     method: 'POST',
+    credentials: 'include',
     headers: {
       "Content-Type": "application/json"
     },
@@ -21,6 +22,7 @@ export const register = (email, password) => {
   export const authorize = (email, password) => {
   return fetch(`${AUTH_URL}/signin`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       "Content-Type": "application/json"
     },
@@ -31,6 +33,7 @@ export const register = (email, password) => {
   export const checkTokenValidity = (token) => {
   return fetch(`${AUTH_URL}/users/me`,{
     method: 'GET',
+    credentials: 'include',
     headers: {
       "Content-Type": "application/json",
       "Authorization" : `Bearer ${token}`

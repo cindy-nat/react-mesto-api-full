@@ -3,7 +3,7 @@ import {Route, Redirect, Switch, useHistory} from "react-router-dom";
 import Main from "./Main";
 import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
-import api from "../utils/api";
+import Api from "../utils/api";
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
@@ -31,6 +31,14 @@ function App() {
   const [infoTooltipIsOpened, setInfoTooltipIsOpened] = React.useState(false);
   const history = useHistory();
 
+  const api = new Api({
+    baseUrl: 'http://localhost:3000',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization" : `Bearer ${localStorage.getItem('jwt')}`
+    }
+  });
+
   //проверка токена
   const tokenCheck = () => {
     const jwt = localStorage.getItem('jwt');
@@ -38,7 +46,7 @@ function App() {
       auth.checkTokenValidity(jwt)
       .then(data=>{
         if(data) {
-          setEmail(data.data.email);
+          setEmail(data.email);
           setLoggedIn(true);
           history.push("/");
         }
@@ -48,6 +56,7 @@ function App() {
       localStorage.removeItem('jwt');
     }
   }
+
 
   // выход из пользователя
   const handleSignOut = () => {
@@ -83,18 +92,20 @@ function App() {
       .catch(err => console.log(err));
   }
 
-  //получение данных
+//  получение данных
   React.useEffect(()=>{
+    if(loggedIn){
     Promise.all([api.getInfo(), api.getCards()])
       .then(([userInfo, cards])=>{
         setCurrentUser(userInfo);
         setCards(cards);
       })
-      .catch(err => console.log(err))},[]);
+      .catch(err => console.log(err))}},[loggedIn]);
 
   React.useEffect(()=>{
     tokenCheck();
-  },[loggedIn]);
+
+    },[loggedIn]);
 
   //функции для установки состояния открытого попапа
     function handleEditAvatarClick () {
@@ -148,7 +159,7 @@ function App() {
 
    //функция для лайка карточек
   function handleCardLike (card) {
-    const isLiked = card.likes.some(like => like._id ===currentUser._id);
+    const isLiked = card.likes.some(like => like ===currentUser._id);
     api.changeLikeCardStatus(card._id, !isLiked)
       .then((newCard)=>{
       const newCards = cards.map(cardItem=>cardItem._id === card._id ? newCard : cardItem);

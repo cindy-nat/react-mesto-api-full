@@ -14,7 +14,8 @@ class Api {
   //запрос информации с сервера о данных пользователя
   getInfo() {
 return fetch(`${this._baseUrl}/users/me`, {
-  headers:this._headers})
+  headers:this._headers,
+  credentials: 'include',})
   .then(this._getResponseData);
   }
 
@@ -23,6 +24,7 @@ return fetch(`${this._baseUrl}/users/me`, {
     return fetch(`${this._baseUrl}/users/me`, {
       method: 'PATCH',
       headers: this._headers,
+      credentials: 'include',
       body: JSON.stringify({
         name,
         about
@@ -36,6 +38,7 @@ return fetch(`${this._baseUrl}/users/me`, {
     return fetch(`${this._baseUrl}/users/me/avatar`, {
       method: 'PATCH',
       headers: this._headers,
+      credentials: 'include',
       body: JSON.stringify({
         avatar: avatarLink,
       })
@@ -46,7 +49,8 @@ return fetch(`${this._baseUrl}/users/me`, {
   //запрос данных с сервера для получения карточек
   getCards() {
     return fetch(`${this._baseUrl}/cards`, {
-      headers:this._headers})
+      headers:this._headers,
+      credentials: 'include',})
       .then(this._getResponseData);
   }
 
@@ -60,6 +64,7 @@ return fetch(`${this._baseUrl}/users/me`, {
     return fetch(`${this._baseUrl}/cards `, {
       method: 'POST',
       headers: this._headers,
+      credentials: 'include',
       body: JSON.stringify({
         name: data.name,
         link: data.link
@@ -72,6 +77,7 @@ return fetch(`${this._baseUrl}/users/me`, {
   deleteCard(id) {
     return fetch(`${this._baseUrl}/cards/${id} `, {
       method: 'DELETE',
+      credentials: 'include',
       headers: this._headers
     })
       .then(this._getResponseData);
@@ -81,6 +87,7 @@ return fetch(`${this._baseUrl}/users/me`, {
   addLike(cardId) {
     return fetch(`${this._baseUrl}/cards/likes/${cardId} `, {
       method: 'PUT',
+      credentials: 'include',
       headers: this._headers
     })
   }
@@ -89,6 +96,7 @@ return fetch(`${this._baseUrl}/users/me`, {
   removeLike(cardId) {
     return fetch(`${this._baseUrl}/cards/likes/${cardId} `, {
       method: 'DELETE',
+      credentials: 'include',
       headers: this._headers
     })
   }
@@ -103,14 +111,5 @@ return fetch(`${this._baseUrl}/users/me`, {
   }
 }
 
-
-
-const api = new Api({
-  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-16',
-  headers: {
-    authorization: '842f9f83-d4fc-40ad-8c5d-37f5b812d684',
-    'Content-Type': 'application/json'
-  }
-});
-export default api;
+export default Api;
 

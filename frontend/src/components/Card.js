@@ -19,9 +19,9 @@ function Card({onCardClick, onCardLike, onCardDelete, card}) {
   const currentUser = React.useContext(CurrentUserContext);
 
   //определяем создана карточка нами
-  const isOwn = card.owner._id === currentUser._id;
+  const isOwn = card.owner === currentUser._id;
   //определяем лайкнута ли карточка нами
-  const isLiked = card.likes.some(like=>like._id === currentUser._id);
+  const isLiked = card.likes.some(like=>like === currentUser._id);
 
   //показывать кнопку удаления, если карточка создана нами
   const cardDeleteButtonDisplay = (`${isOwn ? "block" : "none"}`);
