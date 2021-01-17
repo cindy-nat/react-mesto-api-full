@@ -1,7 +1,7 @@
+const jwt = require('jsonwebtoken');
 const user = require('../models/user');
 const { showError, OK_CODE } = require('../helper/helper');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 // показать всех пользователей
 const getUsers = (req, res) => user.find({})
@@ -17,35 +17,32 @@ const getUser = (req, res) => {
     .catch((err) => showError(res, err));
 };
 
+// показать данные пользователя
+const getUserInfo = (req, res) => {
+  user.findById(req.user._id)
+    .orFail(new Error('CastError'))
+    .then((userData) => res.status(OK_CODE).send(userData))
+    .catch((err) => showError(res, err));
+};
+
 const login = (req, res) => {
-  const {email, password} = req.body;
-  user.findOne({ email }).select('+password')
-    .then(user => {
-      if(!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password)
-        .then(matched => {
-          if(!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
-          }
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key',  { expiresIn: '7d' });
-          //res.cookie('jwt',token, { httpOnly: true, maxAge: 3600000 });
-          res.send ({ token });
-        })
+  const { email, password } = req.body;
+  return user.findUserByCredentials(email, password)
+    .then((userInfo) => {
+      const token = jwt.sign({ _id: userInfo._id }, 'some-secret-key');
+      res.send({ token });
     })
-    .catch(err => {
-      res.status(401).send({message: err.message});
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
     });
-}
+};
 
 // создать нового пользователя
-const createUser = (req, res) =>
-  bcrypt.hash(req.body.password, 10)
-    .then (hash =>   user.create({
-      ...req.body,
-      password: hash
-    }))
+const createUser = (req, res) => bcrypt.hash(req.body.password, 10)
+  .then((hash) => user.create({
+    ...req.body,
+    password: hash,
+  }))
   .then((userData) => res.status(OK_CODE).send(userData))
   .catch((err) => showError(res, err));
 
@@ -71,5 +68,6 @@ module.exports = {
   createUser,
   updateUser,
   updateAvatar,
-  login
+  login,
+  getUserInfo,
 };
