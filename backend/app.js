@@ -2,10 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { logout } = require('./controllers/users');
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -18,7 +20,7 @@ const app = express();
 
 const corsOptions = {
   origin: ['http://localhost:3001',
-    'http://cindy.students.nomoredomains.monster'
+    'http://cindy.students.nomoredomains.monster',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
@@ -38,6 +40,7 @@ app.listen(PORT, () => {
 
 app.use('*', cors(corsOptions));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.post('/signin', login);
 app.post('/signup', createUser);
@@ -49,6 +52,7 @@ app.use(auth);
 app.use('/', users);
 // получение данных карточек
 app.use('/', cards);
+app.get('/logout', logout);
 
 // вывод ошибки, что действие осуществляется по несуществующему маршруту
 app.all('/*', (req, res) => {

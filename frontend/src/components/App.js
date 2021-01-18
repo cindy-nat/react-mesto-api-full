@@ -3,7 +3,7 @@ import {Route, Redirect, Switch, useHistory} from "react-router-dom";
 import Main from "./Main";
 import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
-import Api from "../utils/api";
+import * as api from "../utils/api";
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
@@ -12,7 +12,6 @@ import ConfirmDeletePopup from "./ConfirmDeletePopup";
 import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
-import * as auth from '../utils/auth';
 import Header from "./Header";
 import InfoTooltip from "./InfoTooltip";
 
@@ -31,19 +30,9 @@ function App() {
   const [infoTooltipIsOpened, setInfoTooltipIsOpened] = React.useState(false);
   const history = useHistory();
 
-  const api = new Api({
-    baseUrl: 'http://localhost:3000',
-    headers: {
-      'Content-Type': 'application/json',
-      "Authorization" : `Bearer ${localStorage.getItem('jwt')}`
-    }
-  });
-
   //проверка токена
   const tokenCheck = () => {
-    const jwt = localStorage.getItem('jwt');
-    if(jwt){
-      auth.checkTokenValidity(jwt)
+      api.getInfo()
       .then(data=>{
         if(data) {
           setEmail(data.email);
@@ -51,29 +40,24 @@ function App() {
           history.push("/");
         }
       })
-    }
-    else {
-      localStorage.removeItem('jwt');
-    }
   }
-
 
   // выход из пользователя
   const handleSignOut = () => {
-    localStorage.removeItem('jwt');
+    api.logout().
+    then(() => {
       setLoggedIn(false);
-      history.push('/sign-in')
-  }
+      history.push('/sign-in');
+    })
+}
+
 
   //вход в пользователя
   const handleSignIn = (email,password) => {
-    auth.authorize(email, password)
-      .then(data => {
-        if(data.token) {
-          localStorage.setItem('jwt', data.token);
+    api.authorize(email, password)
+      .then(() => {
           history.push("/");
           setLoggedIn(true);
-        }
       })
       .catch(err=>{
         setInfoTooltipIsOpened(true);
@@ -83,7 +67,7 @@ function App() {
 
   // регистрация пользователя
   const handleRegister = (email, password) => {
-    auth.register(email, password)
+    api.register(email, password)
       .then(data => {
         if (data) {
           setInfoTooltipIsOpened(true);
@@ -94,18 +78,13 @@ function App() {
 
 //  получение данных
   React.useEffect(()=>{
-    if(loggedIn){
+    tokenCheck();
     Promise.all([api.getInfo(), api.getCards()])
       .then(([userInfo, cards])=>{
         setCurrentUser(userInfo);
         setCards(cards);
       })
-      .catch(err => console.log(err))}},[loggedIn]);
-
-  React.useEffect(()=>{
-    tokenCheck();
-
-    },[loggedIn]);
+      .catch(err => console.log(err))},[loggedIn]);
 
   //функции для установки состояния открытого попапа
     function handleEditAvatarClick () {
@@ -188,6 +167,7 @@ function App() {
   //функция для добавления карточек
   function handleAddPlaceSubmit (data) {
     setLoading(true);
+    console.log(api);
     api.addCard(data)
       .then(card=>{
         setCards([card, ...cards])

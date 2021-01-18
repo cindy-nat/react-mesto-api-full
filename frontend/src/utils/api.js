@@ -1,115 +1,153 @@
-class Api {
-  constructor({baseUrl, headers}) {
-    this._baseUrl = baseUrl;
-    this._headers=headers;
-  }
+//export const BASE_URL = 'http://api.cindy.students.nomoredomains.monster';
+export const BASE_URL = 'http://localhost:3000';
 
-  _getResponseData(res) {
-    if (!res.ok) {
-      return Promise.reject(`Произошла ошибка ${res.status}`);
-    }
-    return res.json();
+
+const getResponseData = (res) => {
+  if (!res.ok) {
+    return Promise.reject(`Произошла ошибка ${res.status}`);
   }
+  return res.json();
+}
+
+export const register = (email, password) => {
+  return fetch(`${BASE_URL}/signup` , {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({email, password})})
+    .then(response => getResponseData(response));
+}
+
+export const authorize = (email, password) => {
+  return fetch(`${BASE_URL}/signin`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({email, password})})
+    .then(response => getResponseData(response));
+}
 
   //запрос информации с сервера о данных пользователя
-  getInfo() {
-return fetch(`${this._baseUrl}/users/me`, {
-  headers:this._headers,
+export const getInfo = () => {
+return fetch(`${BASE_URL}/users/me`, {
+  headers: {
+    "Content-Type": "application/json"
+  },
   credentials: 'include',})
-  .then(this._getResponseData);
+  .then(getResponseData);
   }
 
   //отправка новых данных о пользователе на сервер
-  setInfo({name, about}) {
-    return fetch(`${this._baseUrl}/users/me`, {
+export const setInfo = ({name, about}) => {
+    return fetch(`${BASE_URL}/users/me`, {
       method: 'PATCH',
-      headers: this._headers,
-      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json"
+      },      credentials: 'include',
       body: JSON.stringify({
         name,
         about
       })
     })
-  .then(this._getResponseData);
+  .then(getResponseData);
   }
 
   //Изменение аватарки на сервере
-  setAvatar(avatarLink) {
-    return fetch(`${this._baseUrl}/users/me/avatar`, {
+export const setAvatar = (avatarLink) => {
+    return fetch(`${BASE_URL}/users/me/avatar`, {
       method: 'PATCH',
-      headers: this._headers,
-      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json"
+      },      credentials: 'include',
       body: JSON.stringify({
         avatar: avatarLink,
       })
     })
-      .then(this._getResponseData);
+      .then(getResponseData);
   }
 
   //запрос данных с сервера для получения карточек
-  getCards() {
-    return fetch(`${this._baseUrl}/cards`, {
-      headers:this._headers,
-      credentials: 'include',})
-      .then(this._getResponseData);
+export const getCards = () => {
+    return fetch(`${BASE_URL}/cards`, {
+      headers: {
+        "Content-Type": "application/json"
+      },      credentials: 'include',})
+      .then(getResponseData);
   }
 
   //сбор всех данных для загрузки страницы
-  getAllData() {
-    return Promise.all([this.getInfo(), this.getCards()]);
+export const getAllData = () => {
+    return Promise.all([getInfo(), getCards()]);
   }
 
   //добавление карточки на сервер
-  addCard(data) {
-    return fetch(`${this._baseUrl}/cards `, {
+export const addCard = (data) => {
+    return fetch(`${BASE_URL}/cards `, {
       method: 'POST',
-      headers: this._headers,
-      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json"
+      },      credentials: 'include',
       body: JSON.stringify({
         name: data.name,
         link: data.link
       })
     })
-      .then(this._getResponseData);
+      .then(getResponseData);
   }
 
   //удаление карточки с сервера
-  deleteCard(id) {
-    return fetch(`${this._baseUrl}/cards/${id} `, {
+export const deleteCard = (id) => {
+    return fetch(`${BASE_URL}/cards/${id} `, {
       method: 'DELETE',
       credentials: 'include',
-      headers: this._headers
-    })
-      .then(this._getResponseData);
+      headers: {
+        "Content-Type": "application/json"
+      },    })
+      .then(getResponseData);
   }
 
   //Установка лайка
-  addLike(cardId) {
-    return fetch(`${this._baseUrl}/cards/likes/${cardId} `, {
+ const addLike = (cardId) => {
+    return fetch(`${BASE_URL}/cards/likes/${cardId} `, {
       method: 'PUT',
       credentials: 'include',
-      headers: this._headers
+      headers: {
+        "Content-Type": "application/json"
+      },
     })
   }
 
 //удаление лайка с сервера
-  removeLike(cardId) {
-    return fetch(`${this._baseUrl}/cards/likes/${cardId} `, {
+ const removeLike = (cardId) => {
+    return fetch(`${BASE_URL}/cards/likes/${cardId} `, {
       method: 'DELETE',
       credentials: 'include',
-      headers: this._headers
+      headers: {
+        "Content-Type": "application/json"
+      },
     })
   }
 
-  changeLikeCardStatus(cardId, isLiked) {
+export const changeLikeCardStatus = (cardId, isLiked) => {
   if(!isLiked) {
-      return this.removeLike(cardId).then(this._getResponseData);
+      return removeLike(cardId).then(getResponseData);
     }
   else {
-    return this.addLike(cardId).then(this._getResponseData)
+    return addLike(cardId).then(getResponseData)
   }
   }
-}
 
-export default Api;
-
+  export const logout = () => {
+    return fetch(`${BASE_URL}/logout `, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+      .then(getResponseData);
+  }

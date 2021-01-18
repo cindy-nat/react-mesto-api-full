@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const user = require('../models/user');
 const { showError, OK_CODE } = require('../helper/helper');
-const bcrypt = require('bcryptjs');
 
 // показать всех пользователей
 const getUsers = (req, res) => user.find({})
@@ -30,11 +30,17 @@ const login = (req, res) => {
   return user.findUserByCredentials(email, password)
     .then((userInfo) => {
       const token = jwt.sign({ _id: userInfo._id }, 'some-secret-key');
-      res.send({ token });
+      res.cookie('jwt', token, { maxAge: 3600 * 24 * 7, httpOnly: true, sameSite: true });
+      res.status(200).send({ message: 'Авторизация успешна' });
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
     });
+};
+
+const logout = (req, res) => {
+  res.cookie('jwt', '', { maxAge: -1, httpOnly: true, sameSite: true })
+    .send({ message: 'Logged out' });
 };
 
 // создать нового пользователя
@@ -70,4 +76,5 @@ module.exports = {
   updateAvatar,
   login,
   getUserInfo,
+  logout,
 };
