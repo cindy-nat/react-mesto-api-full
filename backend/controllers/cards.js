@@ -20,10 +20,16 @@ const createCard = (req, res) => {
 // удалить карточку
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
-  card.findByIdAndRemove(cardId)
+  card.findById(cardId)
     .orFail(new Error('CastError'))
-    .then((cardItem) => res.status(OK_CODE).send(cardItem))
-    .catch((err) => showError(res, err));
+    .then((cardItem) => {
+      if (cardItem.owner !== req.user._id) {
+        res.status(401).send({ message: 'Вы пытаетесь удалить чужую карточку' });
+      } else {
+        card.deleteOne(cardItem)
+          .then((deletedCard) => res.status(OK_CODE).send(deletedCard));
+      }
+    });
 };
 
 // лайкнуть карточку
