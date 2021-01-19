@@ -167,7 +167,6 @@ function App() {
   //функция для добавления карточек
   function handleAddPlaceSubmit (data) {
     setLoading(true);
-    console.log(api);
     api.addCard(data)
       .then(card=>{
         setCards([card, ...cards])

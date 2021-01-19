@@ -54,6 +54,11 @@ app.use('/', users);
 app.use('/', cards);
 app.get('/logout', logout);
 
+app.use('', (err, req, res) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
+});
+
 // вывод ошибки, что действие осуществляется по несуществующему маршруту
 app.all('/*', (req, res) => {
   res.status(404);
