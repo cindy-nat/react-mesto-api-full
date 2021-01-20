@@ -25,7 +25,7 @@ routercards.delete('/cards/:cardId', celebrate({
 }), deleteCard);
 
 // работа с лайками
-routercards.put('/cards/likes/:cardId', celebrate({
+routercards.put('/cards/:cardId/likes', celebrate({
   params: Joi.object()
     .keys({
       cardId: Joi.string()
@@ -33,7 +33,7 @@ routercards.put('/cards/likes/:cardId', celebrate({
         .length(24),
     }),
 }), likeCard);
-routercards.delete('/cards/likes/:cardId', celebrate({
+routercards.delete('/cards/:cardId/likes', celebrate({
   params: Joi.object()
     .keys({
       cardId: Joi.string()

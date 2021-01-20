@@ -19,7 +19,7 @@ const getUsers = (req, res, next) => user.find({})
 const getUser = (req, res, next) => {
   const { id } = req.params;
   user.findById(id)
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError('Нет пользователя с таким id'))
     .then((userData) => res.status(OK_CODE).send(userData))
     .catch(next);
 };
@@ -27,7 +27,7 @@ const getUser = (req, res, next) => {
 // показать данные пользователя
 const getUserInfo = (req, res, next) => {
   user.findById(req.user._id)
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError('Нет пользователя с таким id'))
     .then((userData) => res.status(OK_CODE).send(userData))
     .catch(next);
 };
@@ -65,7 +65,7 @@ const createUser = (req, res, next) => bcrypt.hash(req.body.password, 10)
 // обновить пользователя
 const updateUser = (req, res, next) => {
   user.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError('Нет пользователя с таким id'))
     .then((userData) => {
       if (!userData) { throw new NotCorrectDataError('Переданы некорретные данные для обновления'); }
       res.status(OK_CODE).send(userData);
@@ -76,7 +76,7 @@ const updateUser = (req, res, next) => {
 // обновить аватар
 const updateAvatar = (req, res, next) => {
   user.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
-    .orFail(new NotFoundError('Пользователь не найден'))
+    .orFail(new NotFoundError('Нет пользователя с таким id'))
     .then((userData) => {
       if (!userData) { throw new NotCorrectDataError('Переданы некорретные данные для обновления'); }
       res.status(OK_CODE).send(userData);

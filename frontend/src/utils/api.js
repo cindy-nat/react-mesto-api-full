@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://api.cindy.students.nomoredomains.monster';
+ export const BASE_URL = 'http://api.cindy.students.nomoredomains.monster';
 // export const BASE_URL = 'http://localhost:3000';
 
 
@@ -79,11 +79,6 @@ export const getCards = () => {
       .then(getResponseData);
   }
 
-  //сбор всех данных для загрузки страницы
-export const getAllData = () => {
-    return Promise.all([getInfo(), getCards()]);
-  }
-
   //добавление карточки на сервер
 export const addCard = (data) => {
     return fetch(`${BASE_URL}/cards `, {
@@ -112,7 +107,7 @@ export const deleteCard = (id) => {
 
   //Установка лайка
  const addLike = (cardId) => {
-    return fetch(`${BASE_URL}/cards/likes/${cardId} `, {
+    return fetch(`${BASE_URL}/cards/${cardId}/likes`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -123,7 +118,7 @@ export const deleteCard = (id) => {
 
 //удаление лайка с сервера
  const removeLike = (cardId) => {
-    return fetch(`${BASE_URL}/cards/likes/${cardId} `, {
+    return fetch(`${BASE_URL}/cards/${cardId}/likes`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {

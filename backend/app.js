@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { errors } = require('celebrate');
+const { Joi, celebrate, errors } = require('celebrate');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
@@ -55,8 +55,19 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(2),
+    password: Joi.string().required(),
+  }),
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(2).email(),
+    password: Joi.string().required(),
+  }),
+}), createUser);
 
 // авторизация
 app.use(auth);
@@ -70,9 +81,9 @@ app.get('/logout', logout);
 // логгер ошибок
 app.use(errorLogger);
 
-app.use(errors()); // обработчик ошибок celebrate
+app.use(errors());
 
-app.use('', (err, req, res) => {
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
 });
