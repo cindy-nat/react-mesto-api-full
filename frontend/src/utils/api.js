@@ -1,5 +1,5 @@
-//export const BASE_URL = 'http://api.cindy.students.nomoredomains.monster';
-export const BASE_URL = 'http://localhost:3000';
+export const BASE_URL = 'http://api.cindy.students.nomoredomains.monster';
+// export const BASE_URL = 'http://localhost:3000';
 
 
 const getResponseData = (res) => {

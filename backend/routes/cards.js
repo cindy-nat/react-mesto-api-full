@@ -1,4 +1,5 @@
 const routercards = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const {
   getCards,
   createCard,
@@ -6,15 +7,39 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/cards');
+const { regex } = require('../helper/helper');
 
 routercards.get('/cards', getCards);
 
-routercards.post('/cards', createCard);
+routercards.post('/cards', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().min(2).pattern(new RegExp(regex)),
+  }),
+}), createCard);
 
-routercards.delete('/cards/:cardId', deleteCard);
+routercards.delete('/cards/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), deleteCard);
 
 // работа с лайками
-routercards.put('/cards/likes/:cardId', likeCard);
-routercards.delete('/cards/likes/:cardId', dislikeCard);
+routercards.put('/cards/likes/:cardId', celebrate({
+  params: Joi.object()
+    .keys({
+      cardId: Joi.string()
+        .alphanum()
+        .length(24),
+    }),
+}), likeCard);
+routercards.delete('/cards/likes/:cardId', celebrate({
+  params: Joi.object()
+    .keys({
+      cardId: Joi.string()
+        .alphanum()
+        .length(24),
+    }),
+}), dislikeCard);
 
 module.exports = routercards;

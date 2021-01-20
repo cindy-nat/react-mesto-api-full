@@ -31,7 +31,7 @@ const deleteCard = (req, res, next) => {
   card.findById(cardId)
     .orFail(new NotFoundError('Карточка не найдена'))
     .then((cardItem) => {
-      if (cardItem.owner !== req.user._id) {
+      if (cardItem.owner.toString() !== req.user._id) {
         res.status(401).send({ message: 'Вы пытаетесь удалить чужую карточку' });
       } else {
         card.deleteOne(cardItem)

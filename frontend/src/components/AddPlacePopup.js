@@ -16,7 +16,7 @@ function AddPlacePopup ({isOpen, onClose, onAddPlace, isLoading}) {
 
   function handleAddPlace(e) {
   e.preventDefault();
-  onAddPlace({name,link});
+  onAddPlace({ name,link });
   setName("");
   setLink("");
   }

@@ -1,13 +1,16 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { logout } = require('./controllers/users');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -42,6 +45,16 @@ app.use('*', cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+// логгер запросов
+app.use(requestLogger);
+
+// Краш-тест сервера для ревью!
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
 app.post('/signin', login);
 app.post('/signup', createUser);
 
@@ -53,6 +66,11 @@ app.use('/', users);
 // получение данных карточек
 app.use('/', cards);
 app.get('/logout', logout);
+
+// логгер ошибок
+app.use(errorLogger);
+
+app.use(errors()); // обработчик ошибок celebrate
 
 app.use('', (err, req, res) => {
   const { statusCode = 500, message } = err;

@@ -1,7 +1,8 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const user = require('../models/user');
-const { showError, OK_CODE } = require('../helper/helper');
+const { OK_CODE } = require('../helper/helper');
 const NotFoundError = require('../errors/NotFoundError');
 const NotCorrectDataError = require('../errors/NotCorrectDataError');
 const NotAthorizedError = require('../errors/NotAthorizedError');
@@ -33,10 +34,11 @@ const getUserInfo = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
+  const { NODE_ENV, JWT_SECRET } = process.env;
   return user.findUserByCredentials(email, password)
     .then((userInfo) => {
       if (!userInfo) { throw new NotAthorizedError('Пользователь не авторизирован'); }
-      const token = jwt.sign({ _id: userInfo._id }, 'some-secret-key');
+      const token = jwt.sign({ _id: userInfo._id }, NODE_ENV === 'production' ? JWT_SECRET:'some-secret-key');
       res.cookie('jwt', token, { maxAge: 3600 * 24 * 7, httpOnly: true, sameSite: true });
       res.status(200).send({ message: 'Авторизация успешна' });
     })
