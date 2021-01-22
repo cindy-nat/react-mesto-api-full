@@ -2,6 +2,7 @@ const card = require('../models/card');
 const { OK_CODE } = require('../helper/helper');
 const NotFoundError = require('../errors/NotFoundError');
 const NotCorrectDataError = require('../errors/NotCorrectDataError');
+const NoRightsError = require('../errors/NoRightsError');
 
 // получить все карточки
 const getCards = (req, res, next) => {
@@ -32,7 +33,7 @@ const deleteCard = (req, res, next) => {
     .orFail(new NotFoundError('Карточка не найдена'))
     .then((cardItem) => {
       if (cardItem.owner.toString() !== req.user._id) {
-        res.status(401).send({ message: 'Вы пытаетесь удалить чужую карточку' });
+        throw new NoRightsError('Вы пытаетесь удалить чужую карточку');
       } else {
         card.deleteOne(cardItem)
           .then((deletedCard) => res.status(OK_CODE).send(deletedCard));

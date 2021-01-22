@@ -3,6 +3,8 @@
   "rules": {
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "no-console": ["error", { "allow": ["warn", "error", "log"] }],
-    "linebreak-style": 0
+    "linebreak-style": 0,
+    "no-unused-vars": ["off", { "varsIgnorePattern": "next" }],
+    "func-names": ["error", "never"]
   }
 }

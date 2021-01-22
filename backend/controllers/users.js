@@ -6,6 +6,7 @@ const { OK_CODE } = require('../helper/helper');
 const NotFoundError = require('../errors/NotFoundError');
 const NotCorrectDataError = require('../errors/NotCorrectDataError');
 const NotAthorizedError = require('../errors/NotAthorizedError');
+const UserExistsError = require('../errors/UserExistsError');
 
 // показать всех пользователей
 const getUsers = (req, res, next) => user.find({})
@@ -38,7 +39,7 @@ const login = (req, res, next) => {
   return user.findUserByCredentials(email, password)
     .then((userInfo) => {
       if (!userInfo) { throw new NotAthorizedError('Пользователь не авторизирован'); }
-      const token = jwt.sign({ _id: userInfo._id }, NODE_ENV === 'production' ? JWT_SECRET:'some-secret-key');
+      const token = jwt.sign({ _id: userInfo._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key');
       res.cookie('jwt', token, { maxAge: 3600 * 24 * 7, httpOnly: true, sameSite: true });
       res.status(200).send({ message: 'Авторизация успешна' });
     })
@@ -51,16 +52,29 @@ const logout = (req, res) => {
 };
 
 // создать нового пользователя
-const createUser = (req, res, next) => bcrypt.hash(req.body.password, 10)
-  .then((hash) => user.create({
-    ...req.body,
-    password: hash,
-  }))
-  .then((userData) => {
-    if (!userData) { throw new NotCorrectDataError('Переданые некорректные данные для создания позьзователя'); }
-    res.status(OK_CODE).send(userData);
-  })
-  .catch(next);
+const createUser = (req, res, next) => {
+  const { email, password } = req.body;
+  user.findOne({ email })
+    .then((userEmail) => {
+      if (userEmail) {
+        throw new UserExistsError('Пользователь с такой почтой существует');
+      } else {
+        bcrypt.hash(password, 10)
+          .then((hash) => user.create({
+            email,
+            password: hash,
+          }))
+          .then((userData) => {
+            if (!userData) {
+              throw new NotCorrectDataError('Переданые некорректные данные для создания пользователя');
+            }
+            res.status(OK_CODE).send(userData.email);
+          })
+          .catch(next);
+      }
+    })
+    .catch(next);
+};
 
 // обновить пользователя
 const updateUser = (req, res, next) => {
