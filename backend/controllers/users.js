@@ -68,7 +68,7 @@ const createUser = (req, res, next) => {
             if (!userData) {
               throw new NotCorrectDataError('Переданые некорректные данные для создания пользователя');
             }
-            res.status(OK_CODE).send(userData.email);
+            res.status(OK_CODE).send({ email: userData.email });
           })
           .catch(next);
       }
