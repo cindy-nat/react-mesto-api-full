@@ -49,13 +49,6 @@ app.use(cookieParser());
 // логгер запросов
 app.use(requestLogger);
 
-// Краш-тест сервера для ревью!
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().min(2),
@@ -92,4 +85,5 @@ app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
+  next();
 });
