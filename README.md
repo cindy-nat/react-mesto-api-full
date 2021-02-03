@@ -28,7 +28,3 @@ Node.js Express Mongo
 1. Создано логирование доступа и ошибок
 2. Реализована централизованная обработка ошибок с отправкой корректных статусов и сообщений о ошибках на запросы.
 
-## Ссылки
-- сайт: http://cindy.students.nomoredomains.monster/
-- API: http://api.cindy.students.nomoredomains.monster/
-
